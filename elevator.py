@@ -39,7 +39,7 @@ class Elevator():
             desired_floors = [desired_floors]
         # if a single int is not passed in, the desired floors must be in a list
         elif type(desired_floors) is not list:
-            raise Exception("desired_floors must be an single floor number (int) or list of floor numbers")
+            raise Exception("desired_floors must be a single floor number (int) or list of floor numbers")
         # the floors in the list must be ints
         elif not all(isinstance(n, int) for n in desired_floors):
             raise Exception("all floors in list must be an integer")
@@ -49,9 +49,8 @@ class Elevator():
         
         # add current floor to the desired floor list to see start -> finish
         desired_floors.insert(0, self.current_floor)    
-        
         # at least one floor in the list must be different than the current floor
-        if all(floor >= self.current_floor for floor in desired_floors):
+        if (len(set(desired_floors)) == 1):
             raise Exception("must enter at least one floor that is not the current floor: {}". \
                             format(self.current_floor))
         

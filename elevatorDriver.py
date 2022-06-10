@@ -8,8 +8,8 @@ Created on Thu Jun  9 12:57:05 2022
 
 import elevator
 
-elev = elevator.Elevator(5, 10)
+elev = elevator.Elevator(2, 10)
 
-out = elev.go_to_floor([5, 3, 3], real_time=False, sim_speed = 5)
+out = elev.go_to_floor([3], real_time=False, sim_speed = 5)
 
 print(out)
