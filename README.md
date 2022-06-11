@@ -20,6 +20,7 @@
 - `test_elevator.py`: Contains the unit tests for the Elevator class
 - `elevator_driver.py`: Driver file already set up as an example for using the elevator class.
 - `elevator_demo.ipynb`: Demo file set up as an example for using the elevator class. This is the same as the `elevator_driver.py` driver, but is in a jupyter notebook and already shows example output.
+- `environment.yaml`: Contains the dependencies for environment.
 
 
 ## Example
