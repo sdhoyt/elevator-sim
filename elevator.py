@@ -1,18 +1,48 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-
 import numpy as np
 import pandas as pd
 import time
 
 class Elevator():
+    '''
+    Description
+    -----------
+    Class to represent an Elevator with the ability to simulate moving
+    throughout a list of destination floors.
+
+    ...
+
+    Attributes
+    ----------
+    current_floor : int
+        The current floor of the elevator object.
+    sec_per_floor : int
+        The speed of the elevator in number of seconds to move one floor.        
+    
+    ...
+    
+    Assumptions
+    -----------
+    - the speed of the elevator (seconds per floor), but be an integer.
+    
+    ...
+        
+    Example
+    -------
+    import elevator
+    elev = elevator.Elevator(current_floor = 2, sec_per_floor = 10)
+    elev.go_to_floor([3, 5], live_sim = True, sim_speed = 2)
+    
+    
+    '''
     def __init__(self, current_floor = 1, sec_per_floor = 10):
         
         self.current_floor = current_floor
         self.sec_per_floor = sec_per_floor
         
     
-    def __create_route(self, desired_floors):
+    def __create_route(self, floor_checkpoints):
         # The purpose of this method is to create a list of every floor along 
         # the route from current floor to the last desired floor
         
@@ -20,14 +50,14 @@ class Elevator():
         route = [self.current_floor]
         
         # for each desired floor
-        for i, floor in enumerate(desired_floors):
+        for i, floor in enumerate(floor_checkpoints):
             # the index is incremented below, so skip the last one to avoid 
             # out of bounds
-            if (i < len(desired_floors) - 1):                
+            if (i < len(floor_checkpoints) - 1):                
                 # find the direction (up/down) to travel between desired floors
-                direction = int((desired_floors[i + 1] - floor) / abs(desired_floors[i + 1] - floor))
+                direction = int((floor_checkpoints[i + 1] - floor) / abs(floor_checkpoints[i + 1] - floor))
                 # get all the floors between the two desired floors    
-                route += list(range(desired_floors[i] + direction, desired_floors[i + 1] + direction, direction))
+                route += list(range(floor_checkpoints[i] + direction, floor_checkpoints[i + 1] + direction, direction))
         
         return route
 
@@ -63,50 +93,13 @@ class Elevator():
         return desired_floors
    
     
-    def __clean_inputs(self, desired_floors):  
+    def __clean_inputs(self, floor_checkpoints):  
         # The purpose of this method is to remove any consecutive duplicate
         # floors from the desired floors list. This includes the current floor
         
         # remove any consecutively duplicated floors from the list             
-        clean_path = [desired_floors[i] for i in range(len(desired_floors)) if (i==0) or desired_floors[i] != desired_floors[i-1]]
+        clean_path = [floor_checkpoints[i] for i in range(len(floor_checkpoints)) if (i==0) or floor_checkpoints[i] != floor_checkpoints[i-1]]
         return clean_path
-    
-    
-    def __create_dataframe(self, time_elapsed, current_floor, floors_to_next_dest,
-                           time_to_next_dest, next_destination):
-        # The purpose of this method is to create the dataframe containing 
-        # the simulation data
-    
-        sim_out = pd.DataFrame({
-            "time_elapsed":time_elapsed,
-            "current_floor":current_floor,
-            "floors_to_next_dest":floors_to_next_dest,
-            "time_to_next_dest":time_to_next_dest,
-            "next_destination":next_destination
-            }, dtype=int)
-        
-        # convert next destination and floors to next destination to ints which 
-        # were converted to floats during np.append()
-        sim_out["next_destination"] = sim_out["next_destination"].convert_dtypes(int)
-        sim_out["floors_to_next_dest"] = sim_out["floors_to_next_dest"].convert_dtypes(int)  
-        sim_out["time_to_next_dest"] = sim_out["time_to_next_dest"].convert_dtypes(int)  
-        
-        return sim_out
-    
-    
-    def __run_live_sim(self, sim_out, sim_speed):
-        # The purpose of this method to to run a live simulation by
-        # printing the data to the console as the elevator moves between floors
-        
-        # for each row in the sim dataframe
-        for index, row in sim_out.iterrows():
-            # print the elevator sim data
-            print("elapsed time: {}sec current floor: {} next destination: {}". \
-                  format(row["time_elapsed"], row["current_floor"], row["next_destination"]))
-            print("floors to next destination: {} time to next destination: {}sec". \
-                  format(row["floors_to_next_dest"], row["time_to_next_dest"]))
-            # pause the sim based on desired sim speed
-            time.sleep(1/sim_speed)
     
     
     def __get_sim_elapsed_time(self, route):
@@ -131,16 +124,16 @@ class Elevator():
         return np.repeat(route, self.sec_per_floor)[:-self.sec_per_floor + 1]
     
     
-    def __get_sim_next_dest(self, desired_floors):
+    def __get_sim_next_dest(self, floor_checkpoints):
         # The purpose of this method is to get the next destination for each
         # time increment of the simulation
         
         # get the distance (in # of floors) between each floor in the list of 
         # desired floors
-        distances = abs(np.array(np.diff(desired_floors), dtype=int))
+        distances = abs(np.array(np.diff(floor_checkpoints), dtype=int))
         # repeat each desired floor based on the distance between the destinations to 
         # align with the time elapsed
-        destinations = np.repeat(np.repeat(desired_floors[1:], distances), self.sec_per_floor)
+        destinations = np.repeat(np.repeat(floor_checkpoints[1:], distances), self.sec_per_floor)
         # append a nan to end to indicate that there are not more destinations
         next_destination = np.append(destinations, np.nan)  
         
@@ -171,25 +164,83 @@ class Elevator():
         time_to_next_dest = ((floors_to_next_dest - 1) * self.sec_per_floor) + time_to_next_floor
         
         return time_to_next_dest
+    
+    
+    def __create_dataframe(self, time_elapsed, current_floor, floors_to_next_dest,
+                           time_to_next_dest, next_destination):
+        # The purpose of this method is to create the dataframe containing 
+        # the simulation data
+    
+        sim_data = pd.DataFrame({
+            "time_elapsed":time_elapsed,
+            "current_floor":current_floor,
+            "floors_to_next_dest":floors_to_next_dest,
+            "time_to_next_dest":time_to_next_dest,
+            "next_destination":next_destination
+            }, dtype=int)
+        
+        # convert next destination and floors to next destination to ints which 
+        # were converted to floats during np.append()
+        sim_data["next_destination"] = sim_data["next_destination"].convert_dtypes(int)
+        sim_data["floors_to_next_dest"] = sim_data["floors_to_next_dest"].convert_dtypes(int)  
+        sim_data["time_to_next_dest"] = sim_data["time_to_next_dest"].convert_dtypes(int)  
+        
+        return sim_data
+    
+    
+    def __run_live_sim(self, sim_data, sim_speed):
+        # The purpose of this method to to run a live simulation by
+        # printing the data to the console as the elevator moves between floors
+        
+        # for each row in the sim dataframe
+        for index, row in sim_data.iterrows():
+            
+            # if the final floor has not yet been reached
+            if (index != sim_data.shape[0] - 1):
+                # print the elevator sim data
+                print("elapsed time: {}sec | current floor: {} | next destination: {}". \
+                      format(row["time_elapsed"], row["current_floor"], row["next_destination"]))
+                print("floors to next destination: {} | time to next destination: {}sec\n". \
+                      format(row["floors_to_next_dest"], row["time_to_next_dest"]))   
+                    
+                # pause the sim based on desired sim speed
+                time.sleep(1/sim_speed)
+                
+            # when the final floor is reached    
+            else:
+                print("elapsed time: {}sec | current floor: {}". \
+                      format(row["time_elapsed"], row["current_floor"]))
+                print("Final destination reached.")
         
         
     def go_to_floor(self, desired_floors, live_sim = True, sim_speed = 1):
         '''
-        go_to_floor runs the simulation of an elevator moving between its current
+        Description
+        -----------
+        go_to_floor runs a simulation of an elevator moving between its current
         and one or more desired floor destinations. This method outputs a pandas
-        DataFrame containing the simulation data. There are two optional arguements
-        to run a "real time" simulation that prints the data to the console at
-        a speed dictated by the sim_speed argument
+        DataFrame containing the simulation data. Additionaly, there are two 
+        optional arguements to run a "live" simulation that prints the data to 
+        the console at a speed dictated by the sim_speed argument.
+        
+        Assumptions
+        -----------
+        - At least one of the desired floors must differ from the current floor.
+            Attempting to only request the same floor will raise an exception.
+        - Time stopped for doors opening/closing at each destination floor is ignored.
+        - If consecuative duplicate floors are input, the duplications can be ignored.
+            For example, if the desired floors [3, 5, 5] are entered, one of the 5s can
+            be ignored and the simulation will use [3, 5].
         
         Parameters
         ----------
-        desired_floors : int, list containing ints
+        desired_floors : int or list containing ints
             the floor(s) for the elevator to travel to.
         live_sim : boolean, optional
-            determines whether a "realtime" simulation is run where the 
+            determines whether a "live" simulation is run where the 
             elevator data is output to the console as it moves between floors. 
             The default is True.
-        sim_speed : float > 0, optional
+        sim_speed : int or float > 0, optional
             determines the speed of the simulation relative to a 1 second time
             increment. For example, if sim_speed is 0.5, the simulation runs at 
             half the speed as the time increment being used in the simulation. If 
@@ -200,31 +251,38 @@ class Elevator():
 
         Returns
         -------
-        sim_out : DataFrame
-            DataFrame containing all the elevator simulation data. The columns
-            of the DataFrame are as follows:
-                
-
+        sim_data : DataFrame
+            DataFrame containing all the elevator simulation data. 
+            The columns of the DataFrame are as follows:  
+                - time_elapsed: total time elapsed for each time increment of simulation.
+                - current_floor: current floor for each time increment of simulation.
+                - floors_to_next_dest: number of floors to next destination for each 
+                    time increment of simulation.
+                - time_to_next_dest: number of seconds to the next destination for
+                    each time incremement of simulation.
+                - next_destination: next floor destination for each time increment
+                    of the simulation.
         '''
+        
         ###############################
         ## Validate and clean inputs ##
         ###############################
         # confirm that all inputs are valid
-        desired_floors = self.__validate_inputs(desired_floors, live_sim, sim_speed)
+        floor_checkpoints = self.__validate_inputs(desired_floors, live_sim, sim_speed)
         # clean inputs to remove any sequentially duplicated floors
-        desired_floors = self.__clean_inputs(desired_floors)      
+        floor_checkpoints = self.__clean_inputs(floor_checkpoints)      
 
         ###############################
         ## Calculate simulation data ##
         ###############################
         # create the full elevator route to reach each desired floor
-        route = self.__create_route(desired_floors)                
+        route = self.__create_route(floor_checkpoints)                
         # get the total elapsed time for each time increment of the simulation
         time_elapsed = self.__get_sim_elapsed_time(route)
         # get the current floor for each time increment of the simulation
         current_floor = self.__get_sim_current_floor(route)
         # get the next destination for each time increment of the simulation
-        next_destination = self.__get_sim_next_dest(desired_floors) 
+        next_destination = self.__get_sim_next_dest(floor_checkpoints) 
         # get the floors to the next destination for each time increment 
         # of the simulation
         floors_to_next_dest = self.__get_sim_floors_to_next_dest(next_destination, current_floor)
@@ -236,7 +294,7 @@ class Elevator():
         ## Construct a DataFrame ##
         ###########################
         # Construct a dataframe for the entire simulation
-        sim_out = self.__create_dataframe(time_elapsed, current_floor, 
+        sim_data = self.__create_dataframe(time_elapsed, current_floor, 
                                           floors_to_next_dest, time_to_next_dest,
                                           next_destination)           
         #########################
@@ -244,12 +302,12 @@ class Elevator():
         #########################
         # if a live simulation is requested
         if live_sim:
-            self.__run_live_sim(sim_out, sim_speed)
+            self.__run_live_sim(sim_data, sim_speed)
 
         ################################
         ## Save state and output data ##
         ################################
         # Retain the final elevator position and output the sim data
-        self.current_floor = sim_out.current_floor.values[-1]
+        self.current_floor = sim_data.current_floor.values[-1]
         
-        return sim_out
+        return sim_data

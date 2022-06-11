@@ -11,10 +11,10 @@ class TestElevator(unittest.TestCase):
         # desired floor input can be an integer
         elev = elevator.Elevator(2, 10)
         
-        desired_floors_t1 = 3
+        desire_floors_test = 3
         
         ### Expected output
-        exp_out_t1 = pd.DataFrame({
+        expected_output = pd.DataFrame({
             "time_elapsed":[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
             "current_floor":[2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 3],
             "floors_to_next_dest":[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, np.nan],
@@ -22,23 +22,23 @@ class TestElevator(unittest.TestCase):
             "next_destination":[3, 3, 3, 3, 3, 3, 3, 3, 3, 3, np.nan]
             })
 
-        exp_out_t1["floors_to_next_dest"] = exp_out_t1["floors_to_next_dest"].convert_dtypes(int)
-        exp_out_t1["time_to_next_dest"] = exp_out_t1["time_to_next_dest"].convert_dtypes(int)
-        exp_out_t1["next_destination"] = exp_out_t1["next_destination"].convert_dtypes(int)
+        expected_output["floors_to_next_dest"] = expected_output["floors_to_next_dest"].convert_dtypes(int)
+        expected_output["time_to_next_dest"] = expected_output["time_to_next_dest"].convert_dtypes(int)
+        expected_output["next_destination"] = expected_output["next_destination"].convert_dtypes(int)
         
-        t1_out = elev.go_to_floor(desired_floors_t1, False)
+        t1_out = elev.go_to_floor(desire_floors_test, False)
         
-        self.assertTrue(t1_out.equals(exp_out_t1))
+        self.assertTrue(t1_out.equals(expected_output))
     
     
     def test_go_to_floor_input_list(self):
         # desired floor input can be a list of integers
         elev = elevator.Elevator(2, 10)
         
-        desired_floors_t1 = [1, 3]
+        desire_floors_test = [1, 3]
         
         ### Expected output
-        exp_out_t1 = pd.DataFrame({
+        expected_output = pd.DataFrame({
             "time_elapsed":[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15,
                             16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28,
                             29, 30],
@@ -53,13 +53,13 @@ class TestElevator(unittest.TestCase):
                                 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, np.nan]
             })
 
-        exp_out_t1["floors_to_next_dest"] = exp_out_t1["floors_to_next_dest"].convert_dtypes(int)
-        exp_out_t1["time_to_next_dest"] = exp_out_t1["time_to_next_dest"].convert_dtypes(int)
-        exp_out_t1["next_destination"] = exp_out_t1["next_destination"].convert_dtypes(int)
+        expected_output["floors_to_next_dest"] = expected_output["floors_to_next_dest"].convert_dtypes(int)
+        expected_output["time_to_next_dest"] = expected_output["time_to_next_dest"].convert_dtypes(int)
+        expected_output["next_destination"] = expected_output["next_destination"].convert_dtypes(int)
         
-        t1_out = elev.go_to_floor(desired_floors_t1, False)
+        t1_out = elev.go_to_floor(desire_floors_test, False)
         
-        self.assertTrue(t1_out.equals(exp_out_t1))
+        self.assertTrue(t1_out.equals(expected_output))
         
         
     def test_go_to_floor_inputs_with_consec_dups(self):
@@ -67,10 +67,10 @@ class TestElevator(unittest.TestCase):
         # floor is always different ie. [1, 1, 3, 3] -> [1, 3]
         elev = elevator.Elevator(2, 10)
         
-        desired_floors_t1 = [1, 1, 3, 3]
+        desire_floors_test = [1, 1, 3, 3]
         
         ### Expected output
-        exp_out_t1 = pd.DataFrame({
+        expected_output = pd.DataFrame({
             "time_elapsed":[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15,
                             16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28,
                             29, 30],
@@ -85,13 +85,13 @@ class TestElevator(unittest.TestCase):
                                 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, np.nan]
             })
 
-        exp_out_t1["floors_to_next_dest"] = exp_out_t1["floors_to_next_dest"].convert_dtypes(int)
-        exp_out_t1["time_to_next_dest"] = exp_out_t1["time_to_next_dest"].convert_dtypes(int)
-        exp_out_t1["next_destination"] = exp_out_t1["next_destination"].convert_dtypes(int)
+        expected_output["floors_to_next_dest"] = expected_output["floors_to_next_dest"].convert_dtypes(int)
+        expected_output["time_to_next_dest"] = expected_output["time_to_next_dest"].convert_dtypes(int)
+        expected_output["next_destination"] = expected_output["next_destination"].convert_dtypes(int)
         
-        t1_out = elev.go_to_floor(desired_floors_t1, False)
+        t1_out = elev.go_to_floor(desire_floors_test, False)
         
-        self.assertTrue(t1_out.equals(exp_out_t1))
+        self.assertTrue(t1_out.equals(expected_output))
         
     
     def test_go_to_floor_first_desired_is_same_as_current(self):
@@ -99,10 +99,10 @@ class TestElevator(unittest.TestCase):
         # be ignored
         elev = elevator.Elevator(2, 10)
         
-        desired_floors_t1 = [2, 1, 3]
+        desire_floors_test = [2, 1, 3]
         
         ### Expected output
-        exp_out_t1 = pd.DataFrame({
+        expected_output = pd.DataFrame({
             "time_elapsed":[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15,
                             16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28,
                             29, 30],
@@ -117,13 +117,13 @@ class TestElevator(unittest.TestCase):
                                 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, np.nan]
             })
 
-        exp_out_t1["floors_to_next_dest"] = exp_out_t1["floors_to_next_dest"].convert_dtypes(int)
-        exp_out_t1["time_to_next_dest"] = exp_out_t1["time_to_next_dest"].convert_dtypes(int)
-        exp_out_t1["next_destination"] = exp_out_t1["next_destination"].convert_dtypes(int)
+        expected_output["floors_to_next_dest"] = expected_output["floors_to_next_dest"].convert_dtypes(int)
+        expected_output["time_to_next_dest"] = expected_output["time_to_next_dest"].convert_dtypes(int)
+        expected_output["next_destination"] = expected_output["next_destination"].convert_dtypes(int)
         
-        t1_out = elev.go_to_floor(desired_floors_t1, False)
+        t1_out = elev.go_to_floor(desire_floors_test, False)
         
-        self.assertTrue(t1_out.equals(exp_out_t1))
+        self.assertTrue(t1_out.equals(expected_output))
         
         
     def test_go_to_floor_input_not_list_or_int(self):
@@ -137,10 +137,12 @@ class TestElevator(unittest.TestCase):
         elev = elevator.Elevator(2, 10)
         self.assertRaises(Exception, elev.go_to_floor, [1, 4, "5"], False)
     
+    
     def test_go_to_floor_realtime_not_bool(self):
         # tests exception when list contains a non-int
         elev = elevator.Elevator(2, 10)
         self.assertRaises(Exception, elev.go_to_floor, [1, 2, 3], "not a bool")
+        
         
     def test_go_to_floor_all_floors_are_current(self):
         # tests exception when list contains a non-int
@@ -148,9 +150,17 @@ class TestElevator(unittest.TestCase):
         self.assertRaises(Exception, elev.go_to_floor, [2, 2, 2], False)
             
 
-    #TODO: sim speed is an int
-    #TODO: sim speed is a float
-    #TODO: sim speed is not numeric
-    #TODO: sim speed is less than 0
+    def test_go_to_floor_sim_speed_not_numeric(self):
+        #sim_speed must be numeric
+        elev = elevator.Elevator(2, 10)
+        self.assertRaises(Exception, elev.go_to_floor, [2, 2, 2], True, "3")
+        
+        
+    def test_go_to_floor_sim_speed_less_than_equal_zero(self):
+        #sim_speed must greater than zero
+        elev = elevator.Elevator(2, 10)
+        self.assertRaises(Exception, elev.go_to_floor, [2, 2, 2], True, -1)
+        
+
 if __name__ == '__main__':
     unittest.main()
