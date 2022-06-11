@@ -24,7 +24,7 @@ class Elevator():
     
     Assumptions
     -----------
-    - the speed of the elevator (seconds per floor), but be an integer.
+    - the speed of the elevator (seconds per floor). Must be an integer.
     
     ...
         
@@ -235,21 +235,21 @@ class Elevator():
         -----------
         - At least one of the desired floors must differ from the current floor.
             Attempting to only request the same floor will raise an exception.
-        - Time stopped for doors opening/closing at each destination floor is ignored.
-        - If consecuative duplicate floors are input, the duplications can be ignored.
+        - Time for doors opening/closing at each destination floor is ignored.
+        - If consecutive duplicate floors are input, the duplications can be ignored.
             For example, if the desired floors [3, 5, 5] are entered, one of the 5s can
             be ignored and the simulation will use [3, 5].
         
         Parameters
         ----------
         desired_floors : int or list containing ints
-            the floor(s) for the elevator to travel to.
+            The floor(s) for the elevator to travel to.
         live_sim : boolean, optional
-            determines whether a "live" simulation is run where the 
+            Determines whether a "live" simulation is run where the 
             elevator data is output to the console as it moves between floors. 
             The default is True.
         sim_speed : int or float > 0, optional
-            determines the speed of the simulation relative to a 1 second time
+            Determines the speed of the simulation relative to a 1 second time
             increment. For example, if sim_speed is 0.5, the simulation runs at 
             half the speed as the time increment being used in the simulation. If 
             sim_speed is 2, then the simulation is running at twice the speed as
