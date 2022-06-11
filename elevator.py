@@ -39,9 +39,17 @@ class Elevator():
     def __init__(self, current_floor = 1, sec_per_floor = 10):
         
         self.current_floor = current_floor
-        self.sec_per_floor = sec_per_floor
+        self.sec_per_floor = self.__validate_elevator_speed(sec_per_floor)
         
     
+    def __validate_elevator_speed(self, sec_per_floor):
+        # sec_per_floor must be an integer great than 0
+        if (sec_per_floor < 0 or type(sec_per_floor) != int):
+            raise Exception("sec_per_floor must be an integer greater than 0")
+            
+        return sec_per_floor
+            
+            
     def __create_route(self, floor_checkpoints):
         # The purpose of this method is to create a list of every floor along 
         # the route from current floor to the last desired floor
@@ -62,7 +70,7 @@ class Elevator():
         return route
 
 
-    def __validate_inputs(self, desired_floors, live_sim, sim_speed):
+    def __validate_sim_inputs(self, desired_floors, live_sim, sim_speed):
         # The purpose of this method is to check that all inputs are valid
         
         # if the desired floor is an int, make it a list
@@ -93,7 +101,7 @@ class Elevator():
         return desired_floors
    
     
-    def __clean_inputs(self, floor_checkpoints):  
+    def __clean_sim_inputs(self, floor_checkpoints):  
         # The purpose of this method is to remove any consecutive duplicate
         # floors from the desired floors list. This includes the current floor
         
@@ -268,9 +276,9 @@ class Elevator():
         ## Validate and clean inputs ##
         ###############################
         # confirm that all inputs are valid
-        floor_checkpoints = self.__validate_inputs(desired_floors, live_sim, sim_speed)
+        floor_checkpoints = self.__validate_sim_inputs(desired_floors, live_sim, sim_speed)
         # clean inputs to remove any sequentially duplicated floors
-        floor_checkpoints = self.__clean_inputs(floor_checkpoints)      
+        floor_checkpoints = self.__clean_sim_inputs(floor_checkpoints)      
 
         ###############################
         ## Calculate simulation data ##

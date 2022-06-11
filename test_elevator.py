@@ -6,6 +6,14 @@ import pandas as pd
 import numpy as np
 
 class TestElevator(unittest.TestCase):
+    
+    def test_sec_to_floor_not_int(self):
+        # tests if someone inputs a non integer for elevator speed
+        self.assertRaises(Exception, elevator.Elevator(2, 10), 2, .5)
+        
+    def test_sec_to_floor_zero_or_less(self):
+        # tests if someone inputs a number 0 or less for elevator speed
+        self.assertRaises(Exception, elevator.Elevator(2, 10), 2, -1)
 
     def test_go_to_floor_integer_input(self):
         # desired floor input can be an integer
