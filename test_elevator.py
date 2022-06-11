@@ -146,7 +146,11 @@ class TestElevator(unittest.TestCase):
         # tests exception when list contains a non-int
         elev = elevator.Elevator(2, 10)
         self.assertRaises(Exception, elev.go_to_floor, [2, 2, 2], False)
+            
 
-
+    #TODO: sim speed is an int
+    #TODO: sim speed is a float
+    #TODO: sim speed is not numeric
+    #TODO: sim speed is less than 0
 if __name__ == '__main__':
     unittest.main()

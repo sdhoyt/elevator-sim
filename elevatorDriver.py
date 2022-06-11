@@ -10,6 +10,6 @@ import elevator
 
 elev = elevator.Elevator(2, 10)
 
-out = elev.go_to_floor([3], real_time=False, sim_speed = 5)
+out = elev.go_to_floor([3, 1, 6], real_time=False, sim_speed = 5)
 
 print(out)
