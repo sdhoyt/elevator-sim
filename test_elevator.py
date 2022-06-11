@@ -7,13 +7,42 @@ import numpy as np
 
 class TestElevator(unittest.TestCase):
     
+    
     def test_sec_to_floor_not_int(self):
-        # tests if someone inputs a non integer for elevator speed
+        # elevator speed must be an integer
         self.assertRaises(Exception, elevator.Elevator(2, 10), 2, .5)
         
+        
     def test_sec_to_floor_zero_or_less(self):
-        # tests if someone inputs a number 0 or less for elevator speed
+        # elevator speed must greater than zero
         self.assertRaises(Exception, elevator.Elevator(2, 10), 2, -1)
+        
+        
+    def test_current_floor_is_not_int(self):
+        # current floor must be an integer
+        self.assertRaises(Exception, elevator.Elevator(2, 10), 2.5)
+        
+        
+    def test_current_floor_is_higher_than_building_limit(self):
+       # current floor must be on or higher than the lowest building floor
+       self.assertRaises(Exception, elevator.Elevator(2, 10), current_floor = 50, 
+                         sec_per_floor = 10, min_building_floor = 1, 
+                         max_building_floor = 10) 
+       
+       
+    def test_current_floor_is_higher_than_building_limit(self):
+        # current floor be on or lower than the highest building floor
+        self.assertRaises(Exception, elevator.Elevator(2, 10), current_floor = -1, 
+                          sec_per_floor = 10, min_building_floor = 1, 
+                          max_building_floor = 10) 
+
+
+    def test_building_floor_limit_not_integer(self):
+        # building floor limits (min/max) must be integers
+        self.assertRaises(Exception, elevator.Elevator(2, 10), current_floor = -1, 
+                          sec_per_floor = 10, min_building_floor = .5, 
+                          max_building_floor = 10)
+
 
     def test_go_to_floor_integer_input(self):
         # desired floor input can be an integer
@@ -168,7 +197,19 @@ class TestElevator(unittest.TestCase):
         #sim_speed must greater than zero
         elev = elevator.Elevator(2, 10)
         self.assertRaises(Exception, elev.go_to_floor, [2, 2, 2], True, -1)
-        
+    
+    
+    def test_go_to_floor_desired_floor_greater_than_building_max(self):
+        # all desired floors must be on or below the highest building floor
+        elev = elevator.Elevator(2, 10, 1, 10)
+        self.assertRaises(Exception, elev.go_to_floor, [2, -1, 20], True, -1)
 
+
+    def test_go_to_floor_desired_floor_less_than_building_min(self):
+        # all desired floors must be on or above the lowest building floor
+        elev = elevator.Elevator(2, 10, 1, 10)
+        self.assertRaises(Exception, elev.go_to_floor, [2, -1, 5], True, -1)
+        
+        
 if __name__ == '__main__':
     unittest.main()

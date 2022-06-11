@@ -19,7 +19,10 @@ class Elevator():
         The current floor of the elevator object.
     sec_per_floor : int
         The speed of the elevator in number of seconds to move one floor.        
-    
+    min_building_floor: int
+        The lowest floor of the building.
+    max_building_floor: int
+        The highest floor of the building.
     ...
     
     Assumptions
@@ -31,25 +34,52 @@ class Elevator():
     Example
     -------
     import elevator
-    elev = elevator.Elevator(current_floor = 2, sec_per_floor = 10)
+    elev = elevator.Elevator(current_floor = 1, sec_per_floor = 10, 
+                             min_building_floor = 1, max_building_floor = 20)
     elev.go_to_floor([3, 5], live_sim = True, sim_speed = 2)
     
     
     '''
-    def __init__(self, current_floor = 1, sec_per_floor = 10):
+    def __init__(self, current_floor = 1, sec_per_floor = 10, min_building_floor = 1,
+                 max_building_floor = 20):
         
-        self.current_floor = current_floor
+        self.current_floor = self.__validate_current_floor(current_floor, min_building_floor,
+                                                           max_building_floor)
         self.sec_per_floor = self.__validate_elevator_speed(sec_per_floor)
-        
+        self.min_building_floor = self.__validate_building_floors(min_building_floor)
+        self.max_building_floor = self.__validate_building_floors(max_building_floor)
+    
+
+    def __validate_current_floor(self, current_floor, min_building_floor, max_building_floor):
+        # The purpose of this funtion is to verify that the current floor is 
+        # an integer and within the building floor limits
+        if (type(current_floor) is not int):
+            raise Exception("current floor must be an integer")
+        if (current_floor < min_building_floor or current_floor > max_building_floor):
+            raise Exception("current floor must be on or within the min/max floors of .\
+                            the building")
+                            
+        return current_floor
+    
     
     def __validate_elevator_speed(self, sec_per_floor):
-        # sec_per_floor must be an integer great than 0
-        if (sec_per_floor < 0 or type(sec_per_floor) != int):
+        # the purpose of this function is to verify that the elevator speed 
+        # is an integer greater than 0.
+        if (sec_per_floor <= 0 or type(sec_per_floor) is not int):
             raise Exception("sec_per_floor must be an integer greater than 0")
             
         return sec_per_floor
+   
+    
+    def __validate_building_floors(self, floor_limit):
+        # the purpose of this method is to verify that the building floor limits
+        # are integers
+        if (type(floor_limit) is not int):
+            raise Exception("building floors must be an integer")
+        
+        return floor_limit
             
-            
+    
     def __create_route(self, floor_checkpoints):
         # The purpose of this method is to create a list of every floor along 
         # the route from current floor to the last desired floor
@@ -97,6 +127,16 @@ class Elevator():
         if (len(set(desired_floors)) == 1):
             raise Exception("must enter at least one floor that is not the current floor: {}". \
                             format(self.current_floor))
+        
+
+        # desired floors must be at or below the highest building floor
+        if (any(x > self.max_building_floor for x in desired_floors)):
+            raise Exception("at least one desired floor is higher than the highest building floor.")
+        
+
+        # desired floors at or above the lowest building floor
+        if (any(x < self.min_building_floor for x in desired_floors)):
+            raise Exception("at least one desired floor is lower than the lowest building floor.")
         
         return desired_floors
    
@@ -239,6 +279,8 @@ class Elevator():
         - If consecutive duplicate floors are input, the duplications can be ignored.
             For example, if the desired floors [3, 5, 5] are entered, one of the 5s can
             be ignored and the simulation will use [3, 5].
+        - The desired floors must be inclusively within the min/max building floors
+            that are set in the Elevator constructor
         
         Parameters
         ----------
